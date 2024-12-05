@@ -6,39 +6,48 @@ txt_input_path = "./day2/input1.txt"
 csv_output_path = "./day2/input1.csv"
 
 def open_txt_store_csv_and_df():
-    with open(txt_input_path, 'r') as file:
-        rows = []
-        for line in file:
-            rows.append(line.strip().split())
-        max_cols = max(len(row) for row in rows)
-
-    df = pd.read_csv(txt_input_path, delimiter=' ', header=None, names=range(max_cols))
+    df = pd.read_csv(txt_input_path, delimiter=' ', header=None, names=range(8))
+    df = df.apply(pd.to_numeric, errors='coerce')
+    df = df.fillna(0)
     df = df.astype('Int64')
     df.to_csv(csv_output_path, index=None)
     return df
 
-def read_csv_data():
+def calculate_safety():
     with open(csv_output_path, 'r') as file:
         reader = csv.reader(file)
         data = list(reader)
-    safe_counter = 0
-    previous_element = 0
+    safe_counter = -1
     for row in data:
-        # numbers going up
+        # ladder up case
         if row[1] > row [0]:
-            for i in range(len(row)):
-                if row[i] != '':
-                    print("ladderup")
-                    print(element)
-        # numbers going down
-        #else:
+            ladder_counter = 1
+            for i in range(1,7):
+                if row[i+1] > row[i]:
+                    ladder_counter+=1
+            if ladder_counter == 7:
+                safe_counter+=1
+                print("ladder up row:")
+                print(row)
+        # ladder down case
+        else:
+            ladder_counter = 1
+            for i in range(1,7):
+                if row[i+1] < row[i]:
+                    ladder_counter+=1
+            if ladder_counter == 7:
+                safe_counter+=1
+                print("ladder down row:")
+                print(row)
+    print(safe_counter)
+
 
 def calculate_similarity(sorted_x,sorted_y):
     1+1
 
 def main():
     data = open_txt_store_csv_and_df()
-    read_csv_data()
+    calculate_safety()
 
 
 
