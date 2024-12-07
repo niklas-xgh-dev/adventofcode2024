@@ -16,40 +16,44 @@ def open_txt_store_csv_and_df():
 def calculate_safety():
     with open(csv_output_path, 'r') as file:
         reader = csv.reader(file)
-        data = list(reader)
-    safe_counter = -1
+        data = list(reader)[1:]
+        
+    safe_counter = 0
     for row in data:
-        # ladder up case
-        if row[1] > row [0]:
-            ladder_counter = 1
-            for i in range(1,7):
-                if row[i+1] > row[i]:
-                    ladder_counter+=1
-            if ladder_counter == 7:
-                safe_counter+=1
-                print("ladder up row:")
-                print(row)
-        # ladder down case
-        else:
-            ladder_counter = 1
-            for i in range(1,7):
-                if row[i+1] < row[i]:
-                    ladder_counter+=1
-            if ladder_counter == 7:
-                safe_counter+=1
-                print("ladder down row:")
-                print(row)
+        numbers = [int(x) for x in row]
+        
+        seq_length = 0
+        for n in numbers:
+            if n == 0:
+                break
+            seq_length += 1
+            
+        if seq_length < 2:
+            continue
+            
+        is_increasing = numbers[1] > numbers[0]
+        is_safe = True
+        
+        for i in range(seq_length - 1):
+            diff = numbers[i+1] - numbers[i]
+            
+            if is_increasing and (diff <= 0 or diff > 3):
+                is_safe = False
+                break
+            if not is_increasing and (diff >= 0 or abs(diff) > 3):
+                is_safe = False
+                break
+                
+        if is_safe:
+            safe_counter += 1
+            print(f"{'ladder up' if is_increasing else 'ladder down'} row:")
+            print(row[:seq_length])
+            
     print(safe_counter)
-
-
-def calculate_similarity(sorted_x,sorted_y):
-    1+1
 
 def main():
     data = open_txt_store_csv_and_df()
     calculate_safety()
-
-
 
 if __name__ == "__main__":
     main()
